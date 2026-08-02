@@ -9,7 +9,7 @@ export const routes = createBrowserRouter(
     createRoutesFromElements(
         <>
         <Route path="/" element={<PrivateRoute />}>
-            <Route index path="/" element={<Home/>}></Route>
+            <Route index path="/" element={<Home/>} />
         </Route>
 
         <Route path="/login" element={<Login/>} />

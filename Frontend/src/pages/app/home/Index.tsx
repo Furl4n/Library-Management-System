@@ -1,16 +1,13 @@
-import { useContext } from "react";
-import { AuthContext } from "../../../context/AuthContext";
-
+import Hero from "./Hero";
+import FeaturedBooks from "./FeaturedBooks";
 
 function Home(){
-    const { user, handleLogout } = useContext(AuthContext);
 
     return (
         <>
-            <p>Nome: {user?.name}</p>
-            <p>Nome: {user?.email}</p>
-            <p>Nome: {user?.role}</p>
-            <button type="button" onClick={handleLogout}>logout</button>
+            <Hero/>
+
+            <FeaturedBooks />
         </>
     )
 }

@@ -1,41 +1,38 @@
-import { api, BASE_URL } from "../service/api";
+import { api } from "../service/api";
 import type { Book, AddBookData } from "../interfaces/Book";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 
-const fetchData = async() => {
-    return await api.get<Book[]>(`${BASE_URL}/book/get/all`);
+const fetchData = async(): Promise<Book[]> => {
+    const response = await api.get<Book[]>("/books");
+    return response.data;
 }
 
 export function useBookData(){
     return useQuery({
-        queryFn: () => fetchData(),
+        queryFn: fetchData,
         queryKey: ['books-data']
     })
 }
 
-const addBook = async({ title, author, year, genre }: AddBookData) =>{
-    return await api.post("${BASE_URL}/book/new", {
-        title:title,
-        author: author,
-        year: year,
-        genre: genre
-    })
+const addBook = async(data: AddBookData): Promise<Book> =>{
+    const response = await api.post("/books", data);
+    return response.data;
 }
 
 export function useAddBook(){
-    const QueryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: addBook,
 
         onSuccess() {
-            QueryClient.invalidateQueries({queryKey: ['books-data'] })
+            queryClient.invalidateQueries({queryKey: ['books-data'] });
         },
-    })
+    });
 }
 
-const deleteBook = async(bookId: Number) => {
-    return await api.delete(`${BASE_URL}/book/delete/${bookId}`)
+const deleteBook = async(bookId: number): Promise<void> => {
+    await api.delete(`/books/${bookId}`)
 }
 
 export function useDeleteBook(){
@@ -45,7 +42,7 @@ export function useDeleteBook(){
         mutationFn: deleteBook,
 
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['books-data']})
+            queryClient.invalidateQueries({queryKey: ['books-data']});
         }
-    })
+    });
 }

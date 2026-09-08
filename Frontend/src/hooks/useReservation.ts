@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { addReservation, Reservation } from "../interfaces/Reservation"
-import { api, BASE_URL } from "../service/api"
+import type { AddReservation, Reservation } from "../interfaces/Reservation"
+import { api } from "../service/api"
 
-const fetchData = async() => {
-    return await api.get<Reservation[]>(`${BASE_URL}/reservation/get/user`)
+const fetchData = async(): Promise<Reservation[]> => {
+    const response = await api.get<Reservation[]>("/reservations/user");
+    return response.data;
 }
 
 export function useReservationData(){
@@ -13,13 +14,9 @@ export function useReservationData(){
     })
 }
 
-const addReservation = async({ bookId, reservationDate, expirationDate, status }: addReservation) => {
-    return await api.post(`${BASE_URL}/reservation/new`, {
-        bookId,
-        reservationDate,
-        expirationDate,
-        status
-    })
+const addReservation = async(data: AddReservation): Promise<Reservation> => {
+    const response = await api.post<Reservation>("/reservations", data);
+    return response.data;
 }
 
 export function useAddReservation(){
@@ -33,8 +30,8 @@ export function useAddReservation(){
     })
 }
 
-const deleteReservation = async(reservationId: Number) => {
-    return await api.delete(`${BASE_URL}/reservation/delete/${reservationId}`)
+const deleteReservation = async(reservationId: number): Promise<void> => {
+    await api.delete(`/reservations/${reservationId}`);
 }
 
 export function useDeleteReservation(){

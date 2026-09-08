@@ -8,7 +8,7 @@ export interface Reservation{
     status: string
 }
 
-export interface addReservation{
+export interface AddReservation{
     bookId: number,
     reservationDate: string,
     expirationDate: string,

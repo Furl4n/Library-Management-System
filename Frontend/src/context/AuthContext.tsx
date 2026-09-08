@@ -2,7 +2,7 @@ import type { User } from "../interfaces/User";
 import type { LoginData, SignupData } from "../interfaces/Auth";
 import { createContext, useEffect, useState, type ReactNode } from "react";
 import { useUserData } from "../hooks/useUser";
-import { api, BASE_URL } from "../service/api";
+import { api } from "../service/api";
 import { setupInterceptors } from "../service/AuthInterceptor";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -52,7 +52,7 @@ export function AuthProvider({ children } : AuthProviderProps) {
 
     async function handleLogin({email, password }: LoginData) {
         try{
-            const response = await api.post(`${BASE_URL}/auth/login`, {
+            const response = await api.post("/auth/login", {
                 email,
                 password
             });
@@ -64,20 +64,20 @@ export function AuthProvider({ children } : AuthProviderProps) {
             api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
             setAuthenticated(true);
+
+            await queryClient.invalidateQueries({
+                queryKey: ["user-data"]
+            });
+
         } catch (error) {
             console.error("Erro no login: ", error);
             throw error;
         }
     }
 
-    async function handleSignup({name, email, role, password}: SignupData) {
+    async function handleSignup(data: SignupData) {
         try{
-            await api.post(`${BASE_URL}/auth/signup`, {
-                name,
-                email,
-                role,
-                password
-            });
+            await api.post("/auth/signup", data);
         } catch (error) {
         console.error("Erro no cadastro: ", error);
         throw error;

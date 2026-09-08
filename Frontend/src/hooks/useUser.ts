@@ -1,11 +1,10 @@
-import { api, BASE_URL } from "../service/api";
+import { api } from "../service/api";
 import type { User } from "../interfaces/User";
 import { useQuery } from '@tanstack/react-query';
-import camelcaseKeys from "camelcase-keys";
 
-const fetchData = async() => {
-    const response = await api.get<User>(`${BASE_URL}/user/get`);
-    return camelcaseKeys(response.data, {deep:true}) as User;
+const fetchData = async(): Promise<User> => {
+    const response = await api.get<User>("/users");
+    return response.data;
 }
 
 export function useUserData() {
@@ -13,7 +12,7 @@ export function useUserData() {
     const token = localStorage.getItem("@Auth:token");
 
     return useQuery({
-        queryFn: () => fetchData(),
+        queryFn: fetchData,
         enabled: !!token,
         queryKey: ['user-data']
     })

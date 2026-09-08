@@ -1,41 +1,38 @@
-import { api, BASE_URL } from "../service/api"
+import { api } from "../service/api"
 import type { AddLoan, Loan } from "../interfaces/Loan"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const fetchData = async() => {
-    return await api.get<Loan[]>(`${BASE_URL}/loan/get/user`);
+const fetchData = async(): Promise<Loan[]> => {
+    const response = await api.get<Loan[]>("/loans/user");
+    return response.data;
 }
 
 export function useLoanData(){
     return useQuery({
-        queryFn: () => fetchData(),
+        queryFn: fetchData,
         queryKey: ['loans-data']
     })
 }
 
-const addLoan = async({ bookId, loanDate, dueDate, status }: AddLoan) =>{
-    return await api.post("${BASE_URL}/loan/new", {
-        bookId,
-        loanDate,
-        dueDate,
-        status
-    })
+const addLoan = async(data: AddLoan): Promise<Loan> =>{
+    const response = await api.post<Loan>("/loans", data);
+    return response.data;
 }
 
 export function useAddLoan(){
-    const QueryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: addLoan,
 
         onSuccess() {
-            QueryClient.invalidateQueries({queryKey: ['loans-data'] })
+            queryClient.invalidateQueries({queryKey: ['loans-data'] })
         },
     })
 }
 
-const deleteLoan = async(reservationId: Number) => {
-    return await api.delete(`${BASE_URL}/loan/delete/${reservationId}`)
+const deleteLoan = async(loanId: number): Promise<void> => {
+    await api.delete(`/loans/${loanId}`);
 }
 
 export function useDeleteLoan(){
